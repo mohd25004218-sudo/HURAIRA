@@ -1,0 +1,107 @@
+import os
+
+class Todo:
+    def __init__(self, filename="tasks.txt"):
+        self.filename = filename
+        self.tasks = []
+        self.load_tasks()
+
+    def load_tasks(self):
+        if os.path.exists(self.filename):
+            with open(self.filename, "r") as file:
+                self.tasks = [line.strip() for line in file if line.strip()]
+
+    def save_tasks(self):
+        with open(self.filename, "w") as file:
+            for task in self.tasks:
+                file.write(task + "\n")
+
+    def add_task(self, task):
+        if task.strip() == "":
+            print("Task cannot be empty!")
+            return
+        if task in self.tasks:
+            print("Task already exists!")
+            return
+        self.tasks.append(task)
+        self.save_tasks()
+        print("Task added successfully!")
+
+    def view_tasks(self):
+        if not self.tasks:
+            print("No tasks found!")
+        else:
+            print("\nYour Tasks:")
+            for i, task in enumerate(self.tasks, 1):
+                print(f"{i}. {task}")
+
+    def delete_task(self, index):
+        if 0 <= index < len(self.tasks):
+            removed = self.tasks.pop(index)
+            self.save_tasks()
+            print(f"Task '{removed}' deleted!")
+        else:
+            print("Invalid task number!")
+
+    def mark_complete(self, index):
+        if 0 <= index < len(self.tasks):
+            if "[DONE]" not in self.tasks[index]:
+                self.tasks[index] += " [DONE]"
+                self.save_tasks()
+                print("Task marked as completed!")
+            else:
+                print("Task already completed!")
+        else:
+            print("Invalid task number!")
+
+
+# Main Program
+todo = Todo()
+
+while True:
+    print("\n--- To-Do Notes Builder ---")
+    print("1. Add Task")
+    print("2. View Tasks")
+    print("3. Delete Task")
+    print("4. Mark Task Complete")
+    print("5. Exit")
+
+    choice = input("Enter choice: ")
+
+    if not choice.isdigit():
+        print("Please enter a valid number!")
+        continue
+
+    choice = int(choice)
+
+    if choice == 1:
+        task = input("Enter task: ")
+        todo.add_task(task)
+
+    elif choice == 2:
+        todo.view_tasks()
+
+    elif choice == 3:
+        todo.view_tasks()
+        if todo.tasks:
+            num = input("Enter task number to delete: ")
+            if num.isdigit():
+                todo.delete_task(int(num) - 1)
+            else:
+                print("Invalid input!")
+
+    elif choice == 4:
+        todo.view_tasks()
+        if todo.tasks:
+            num = input("Enter task number to mark complete: ")
+            if num.isdigit():
+                todo.mark_complete(int(num) - 1)
+            else:
+                print("Invalid input!")
+
+    elif choice == 5:
+        print("Exiting program...")
+        break
+
+    else:
+        print("Invalid choice!")
